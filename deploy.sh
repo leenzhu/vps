@@ -1,6 +1,6 @@
-#Debian 9
+#! /bin/bash
 
-function change_source() {
+change_source() {
     if [ ! -f /etc/apt/sources.list.ori ]; then
         mv /etc/apt/sources.list /etc/apt/sources.list.ori
         cat <<EOF > /etc/apt/sources.list
@@ -16,8 +16,8 @@ EOF
     fi
 }
 
-function install_packages() {
-    packages = (
+install_packages() {
+    packages=(
     lrzsz
     git
     curl
@@ -30,30 +30,42 @@ function install_packages() {
     sqlite
     )
     apt update
-    for pkg in pakcages do
-        echo pkg
+    for pkg in ${packages[@]};do
+        apt install -y $pkg
     done
 }
 
-function others() {
-    # install oh-my-zsh
-    sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+install_oh_my_zsh() {
+    bash -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+    chsh -s /bin/zsh
+}
 
-    # git clone vimrc
+install_vim_rc() {
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     git clone https://github.com/leenzhu/vim.d.git ~/.vim.d
     ln -s ~/.vim.d/vimrc ~/.vimrc
+}
 
+install_tmux_rc() {
     # git clone tmuxrc
     git clone https://github.com/leenzhu/tmux.d.git ~/.tmux.d
     ln -s ~/.tmux.d/tmux.conf ~/.tmux.conf
 
-    git clone https://github.com/nhdaly/tmux-better-mouse-mode ~/.tmux.d/better-mouse
     echo run-shell ~/.tmux.d/better-mouse/scroll_copy_mode.tmux >> ~/.tmux.conf
+}
 
-    #enable bbr
+enable_bbr() {
     echo 'net.core.default_qdisc=fq' | tee -a /etc/sysctl.conf
     echo 'net.ipv4.tcp_congestion_control=bbr' |  tee -a /etc/sysctl.conf
     sysctl -p
-    # lsmod | grep bbr
 }
+
+
+#######MAIN##########
+
+#change_source
+install_packages
+install_oh_my_zsh
+install_vim_rc
+install_tmux_rc
+enable_bbr
