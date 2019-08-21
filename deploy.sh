@@ -61,12 +61,24 @@ enable_bbr() {
     sysctl -p
 }
 
+install_golang() {
+    wget https://dl.google.com/go/go1.12.9.linux-amd64.tar.gz -O ~/Downloads/go1.12.9.linux-amd64.tar.gz
+    tar -C /usr/local -xf ~/Downloads/go1.12.9.linux-amd64.tar.gz
+    echo export PATH=$PATH:/usr/local/go/bin >> ~/.zshrc
+    export GOPATH=~/go >> ~/.zshrc
+}
 
+mkdirs() {
+    mkdir ~/Downloads
+    mkdir ~/go
+}
 #######MAIN##########
 
 #change_source
+mkdirs
 install_packages
 install_oh_my_zsh
 install_vim_rc
 install_tmux_rc
+install_golang
 enable_bbr
