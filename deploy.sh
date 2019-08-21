@@ -44,6 +44,7 @@ install_vim_rc() {
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     git clone https://github.com/leenzhu/vim.d.git ~/.vim.d
     ln -s ~/.vim.d/vimrc ~/.vimrc
+    vim +PlugInstall +qall
 }
 
 install_tmux_rc() {
