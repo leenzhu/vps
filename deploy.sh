@@ -1,19 +1,11 @@
 #! /bin/bash
 
-change_source() {
-    if [ ! -f /etc/apt/sources.list.ori ]; then
-        mv /etc/apt/sources.list /etc/apt/sources.list.ori
-        cat <<EOF > /etc/apt/sources.list
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ stretch main non-free contrib
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ stretch-updates main non-free contrib
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ stretch-backports main non-free contrib
-deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ stretch main non-free contrib
-deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ stretch-updates main non-free contrib
-deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ stretch-backports main non-free contrib
-deb https://mirrors.tuna.tsinghua.edu.cn/debian-security/ stretch/updates main non-free contrib
-deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security/ stretch/updates main non-free contrib
-EOF
-    fi
+mkdirs() {
+    mkdir -p /box
+    mkdir -p /box/app
+    mkdir -p /box/conf
+    mkdir -p /box/data
+    mkdir -p /box/www
 }
 
 install_packages() {
@@ -26,25 +18,12 @@ install_packages() {
     htop
     tree
     nginx
-    zsh
     sqlite
     )
     apt update
     for pkg in ${packages[@]};do
         apt install -y $pkg
     done
-}
-
-install_oh_my_zsh() {
-    bash -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-    chsh -s /bin/zsh
-}
-
-install_vim_rc() {
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    git clone https://github.com/leenzhu/vim.d.git ~/.vim.d
-    ln -s ~/.vim.d/vimrc ~/.vimrc
-    vim +PlugInstall +qall
 }
 
 install_tmux_rc() {
@@ -61,24 +40,9 @@ enable_bbr() {
     sysctl -p
 }
 
-install_golang() {
-    wget https://dl.google.com/go/go1.12.9.linux-amd64.tar.gz -O ~/Downloads/go1.12.9.linux-amd64.tar.gz
-    tar -C /usr/local -xf ~/Downloads/go1.12.9.linux-amd64.tar.gz
-    echo export PATH=$PATH:/usr/local/go/bin >> ~/.zshrc
-    export GOPATH=~/go >> ~/.zshrc
-}
-
-mkdirs() {
-    mkdir ~/Downloads
-    mkdir ~/go
-}
 #######MAIN##########
 
-#change_source
 mkdirs
 install_packages
-install_oh_my_zsh
-install_vim_rc
-install_tmux_rc
-install_golang
 enable_bbr
+
